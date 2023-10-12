@@ -1,0 +1,41 @@
+[1;31m
+Start test 1[0m
+[0;34mHmm
+[0m[0;34m
+4[0m[0;34m  .   ____          _            __ _ _
+5[0m[0;34m /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+6[0m[0;34m( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+7[0m[0;34m \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+6[0m[0;34m  '  |____| .__|_| |_|_| |_\__, | / / / /
+5[0m[0;34m =========|_|==============|___/=/_/_/_/
+7[0m[0;34m :: Spring Boot ::                (v2.5.6)
+[0m[0;34m
+¶[0m[0;34m2023-10-10 19:36:25.763  INFO 15156 --- [    Test worker] account.AccountServiceApplicationKt      : Starting AccountServiceApplicationKt using Java 17.0.5 on WIN-PK97IO7J39D with PID 15156 (started by User in D:\JetBrainsWork\Account Service (Kotlin)\Account Service (Kotlin)\task)
+±[0m[0;34m2023-10-10 19:36:25.772  INFO 15156 --- [    Test worker] account.AccountServiceApplicationKt      : No active profile set, falling back to default profiles: default
+¨[0m[0;34m2023-10-10 19:36:29.407  INFO 15156 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+∆[0m[0;34m2023-10-10 19:36:29.468  INFO 15156 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 27 ms. Found 0 JPA repository interfaces.
+û[0m[0;34m2023-10-10 19:36:31.574  INFO 15156 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 28852 (http)
+ä[0m[0;34m2023-10-10 19:36:31.657  INFO 15156 --- [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+†[0m[0;34m2023-10-10 19:36:31.659  INFO 15156 --- [    Test worker] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.54]
+£[0m[0;34m2023-10-10 19:36:31.898  INFO 15156 --- [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+∞[0m[0;34m2023-10-10 19:36:31.901  INFO 15156 --- [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 5956 ms
+ã[0m[0;34m2023-10-10 19:36:32.940  INFO 15156 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+ê[0m[0;34m2023-10-10 19:36:33.587  INFO 15156 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+™[0m[0;34m2023-10-10 19:36:33.838  INFO 15156 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+£[0m[0;34m2023-10-10 19:36:34.073  INFO 15156 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
+©[0m[0;34m2023-10-10 19:36:34.944  INFO 15156 --- [    Test worker] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+™[0m[0;34m2023-10-10 19:36:35.423  INFO 15156 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+‰[0m[0;34m2023-10-10 19:36:36.069  INFO 15156 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+¥[0m[0;34m2023-10-10 19:36:36.085  INFO 15156 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+®[0m[0;34m2023-10-10 19:36:36.385  WARN 15156 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+¶[0m[0;34m2023-10-10 19:36:37.967  INFO 15156 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 14 endpoint(s) beneath base path '/actuator'
+≠[0m[0;34m2023-10-10 19:36:38.175  INFO 15156 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 28852 (http) with context path ''
+ø[0m[0;34m2023-10-10 19:36:38.230  INFO 15156 --- [    Test worker] account.AccountServiceApplicationKt      : Started AccountServiceApplicationKt in 13.348 seconds (JVM running for 14.932)
+¶[0;34m2023-10-10 19:36:38.922  INFO 15156 --- [io-28852-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+ô[0m[0;34m2023-10-10 19:36:38.923  INFO 15156 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+ë[0m[0;34m2023-10-10 19:36:38.928  INFO 15156 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
+ [0m[0;34mIn SignUpController
+m[0m[0;34min if, request = SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=secret)
+[0;34mIn SignUpController
+m[0m[0;34min if, request = SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=secret)
+[0m
