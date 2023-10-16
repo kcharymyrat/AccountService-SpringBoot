@@ -426,9 +426,36 @@ files:
           }
       }
     learner_created: true
+  - name: src/account/businesslayer/AppUser.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/SecurityConfig.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/RestAuthenticationEntryPoint.kt
+    visible: true
+    learner_created: true
+  - name: src/account/persistence/AppUserRepository.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/AppUserDetailsImpl.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/AppUserAdapter.kt
+    visible: true
+    learner_created: true
+  - name: src/account/presentation/AppController.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/Role.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/UserExceptions.kt
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/27097#comment
-status: Failed
+status: Solved
 feedback:
-  message: Execution failed
-  time: "Tue, 10 Oct 2023 14:36:40 UTC"
-record: -1
+  message: Congratulations!
+  time: "Sun, 15 Oct 2023 15:40:19 UTC"
+record: 2

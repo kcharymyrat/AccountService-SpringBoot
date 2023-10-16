@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">15.327s</div>
+<div class="counter">11.624s</div>
 <p>duration</p>
 </div>
 </td>
@@ -76,11 +76,19 @@
 <a name="start"></a>
 <h3 class="failures">start</h3>
 <span class="code">
-<pre>java.lang.AssertionError: Wrong answer in test #1
+<pre>java.lang.AssertionError: Wrong answer in test #11
 
-Response must contain user ID
-Received response:
-{&quot;name&quot;:&quot;John&quot;,&quot;lastname&quot;:&quot;Doe&quot;,&quot;email&quot;:&quot;JohnDoe@acme.com&quot;}
+POST /api/auth/signup should respond with status code 400 , responded: 200
+Response body:
+{&quot;id&quot;:1,&quot;name&quot;:&quot;John&quot;,&quot;lastname&quot;:&quot;Doe&quot;,&quot;email&quot;:&quot;johndoe@acme.com&quot;}
+Request body:
+{
+  &quot;name&quot;: &quot;John&quot;,
+  &quot;lastname&quot;: &quot;Doe&quot;,
+  &quot;email&quot;: &quot;JohnDoe@acme.com&quot;,
+  &quot;password&quot;: &quot;PasswordForJanuary&quot;
+}
+Sending password from breached list
 	at org.junit.Assert.fail(Assert.java:89)
 	at org.hyperskill.hstest.stage.StageTest.start(StageTest.java:203)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -143,7 +151,7 @@ Received response:
 </thead>
 <tr>
 <td class="failures">start</td>
-<td class="failures">15.327s</td>
+<td class="failures">11.624s</td>
 <td class="failures">failed</td>
 </tr>
 </table>
@@ -163,35 +171,189 @@ Start test 1?[0m
 ?[0m?[0;34m =========|_|==============|___/=/_/_/_/
 ?[0m?[0;34m :: Spring Boot ::                (v2.5.6)
 ?[0m?[0;34m
-?[0m?[0;34m2023-10-10 19:36:25.763  INFO 15156 --- [    Test worker] account.AccountServiceApplicationKt      : Starting AccountServiceApplicationKt using Java 17.0.5 on WIN-PK97IO7J39D with PID 15156 (started by User in D:\JetBrainsWork\Account Service (Kotlin)\Account Service (Kotlin)\task)
-?[0m?[0;34m2023-10-10 19:36:25.772  INFO 15156 --- [    Test worker] account.AccountServiceApplicationKt      : No active profile set, falling back to default profiles: default
-?[0m?[0;34m2023-10-10 19:36:29.407  INFO 15156 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-?[0m?[0;34m2023-10-10 19:36:29.468  INFO 15156 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 27 ms. Found 0 JPA repository interfaces.
-?[0m?[0;34m2023-10-10 19:36:31.574  INFO 15156 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 28852 (http)
-?[0m?[0;34m2023-10-10 19:36:31.657  INFO 15156 --- [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-?[0m?[0;34m2023-10-10 19:36:31.659  INFO 15156 --- [    Test worker] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.54]
-?[0m?[0;34m2023-10-10 19:36:31.898  INFO 15156 --- [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-?[0m?[0;34m2023-10-10 19:36:31.901  INFO 15156 --- [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 5956 ms
-?[0m?[0;34m2023-10-10 19:36:32.940  INFO 15156 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-?[0m?[0;34m2023-10-10 19:36:33.587  INFO 15156 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-?[0m?[0;34m2023-10-10 19:36:33.838  INFO 15156 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-?[0m?[0;34m2023-10-10 19:36:34.073  INFO 15156 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
-?[0m?[0;34m2023-10-10 19:36:34.944  INFO 15156 --- [    Test worker] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
-?[0m?[0;34m2023-10-10 19:36:35.423  INFO 15156 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
-?[0m?[0;34m2023-10-10 19:36:36.069  INFO 15156 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-?[0m?[0;34m2023-10-10 19:36:36.085  INFO 15156 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-?[0m?[0;34m2023-10-10 19:36:36.385  WARN 15156 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-?[0m?[0;34m2023-10-10 19:36:37.967  INFO 15156 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 14 endpoint(s) beneath base path '/actuator'
-?[0m?[0;34m2023-10-10 19:36:38.175  INFO 15156 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 28852 (http) with context path ''
-?[0m?[0;34m2023-10-10 19:36:38.230  INFO 15156 --- [    Test worker] account.AccountServiceApplicationKt      : Started AccountServiceApplicationKt in 13.348 seconds (JVM running for 14.932)
-?[0;34m2023-10-10 19:36:38.922  INFO 15156 --- [io-28852-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-?[0m?[0;34m2023-10-10 19:36:38.923  INFO 15156 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-?[0m?[0;34m2023-10-10 19:36:38.928  INFO 15156 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
-?[0m?[0;34mIn SignUpController
-?[0m?[0;34min if, request = SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=secret)
-?[0;34mIn SignUpController
-?[0m?[0;34min if, request = SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=secret)
-?[0m</pre>
+?[0m?[0;34m2023-10-15 20:42:14.246  INFO 10016 --- [    Test worker] account.AccountServiceApplicationKt      : Starting AccountServiceApplicationKt using Java 17.0.5 on WIN-PK97IO7J39D with PID 10016 (started by User in D:\JetBrainsWork\Account Service (Kotlin)\Account Service (Kotlin)\task)
+?[0m?[0;34m2023-10-15 20:42:14.252  INFO 10016 --- [    Test worker] account.AccountServiceApplicationKt      : No active profile set, falling back to default profiles: default
+?[0m?[0;34m2023-10-15 20:42:16.641  INFO 10016 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+?[0m?[0;34m2023-10-15 20:42:16.731  INFO 10016 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 73 ms. Found 1 JPA repository interfaces.
+?[0m?[0;34m2023-10-15 20:42:17.840  INFO 10016 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 28852 (http)
+?[0m?[0;34m2023-10-15 20:42:17.861  INFO 10016 --- [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+?[0m?[0;34m2023-10-15 20:42:17.862  INFO 10016 --- [    Test worker] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.54]
+?[0m?[0;34m2023-10-15 20:42:18.026  INFO 10016 --- [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+?[0m?[0;34m2023-10-15 20:42:18.026  INFO 10016 --- [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3673 ms
+?[0m?[0;34m2023-10-15 20:42:18.489  INFO 10016 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+?[0m?[0;34m2023-10-15 20:42:18.599  INFO 10016 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
+?[0m?[0;34m2023-10-15 20:42:18.880  INFO 10016 --- [    Test worker] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+?[0m?[0;34m2023-10-15 20:42:19.087  INFO 10016 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+?[0m?[0;34m2023-10-15 20:42:19.313  INFO 10016 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+?[0m?[0;34m2023-10-15 20:42:19.360  INFO 10016 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+?[0m?[0;34mHibernate: create table app_user (id bigint not null, authority varchar(255), email varchar(255), lastname varchar(255), name varchar(255), password varchar(255), primary key (id))
+?[0m?[0;34mHibernate: create sequence hibernate_sequence start with 1 increment by 1
+?[0m?[0;34m2023-10-15 20:42:20.116  INFO 10016 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+?[0m?[0;34m2023-10-15 20:42:20.131  INFO 10016 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+?[0m?[0;34m2023-10-15 20:42:21.129  WARN 10016 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+?[0m?[0;34m2023-10-15 20:42:21.251 DEBUG 10016 --- [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : 7 mappings in 'requestMappingHandlerMapping'
+?[0m?[0;34m2023-10-15 20:42:21.373 DEBUG 10016 --- [    Test worker] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+?[0m?[0;34m2023-10-15 20:42:21.649  INFO 10016 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 14 endpoint(s) beneath base path '/actuator'
+?[0m?[0;34m2023-10-15 20:42:21.715  INFO 10016 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7322013f, org.springframework.security.web.context.SecurityContextPersistenceFilter@5c3ad125, org.springframework.security.web.header.HeaderWriterFilter@6ae55678, org.springframework.security.web.authentication.logout.LogoutFilter@4fb3c670, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@433d5536, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1deca369, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2c9430c6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3a744e32, org.springframework.security.web.session.SessionManagementFilter@6d3c80bf, org.springframework.security.web.access.ExceptionTranslationFilter@20e8286a, org.springframework.security.web.access.intercept.AuthorizationFilter@62d818c6]
+?[0m?[0;34m2023-10-15 20:42:21.824 DEBUG 10016 --- [    Test worker] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+?[0m?[0;34m2023-10-15 20:42:21.893 DEBUG 10016 --- [    Test worker] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+?[0m?[0;34m2023-10-15 20:42:22.206  INFO 10016 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 28852 (http) with context path ''
+?[0m?[0;34m2023-10-15 20:42:22.227  INFO 10016 --- [    Test worker] account.AccountServiceApplicationKt      : Started AccountServiceApplicationKt in 8.724 seconds (JVM running for 10.145)
+?[0;34m2023-10-15 20:42:22.935  INFO 10016 --- [io-28852-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+?[0m?[0;34m2023-10-15 20:42:22.936  INFO 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+?[0m?[0;34m2023-10-15 20:42:22.937 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+?[0m?[0;34m2023-10-15 20:42:22.937 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+?[0m?[0;34m2023-10-15 20:42:22.937 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+?[0m?[0;34m2023-10-15 20:42:22.940 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@7271320c
+?[0m?[0;34m2023-10-15 20:42:22.941 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@5c04685
+?[0m?[0;34m2023-10-15 20:42:22.941 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+?[0m?[0;34m2023-10-15 20:42:22.942  INFO 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6 ms
+?[0m?[0;34m2023-10-15 20:42:22.998 DEBUG 10016 --- [io-28852-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.000 DEBUG 10016 --- [io-28852-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.005 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.009 DEBUG 10016 --- [io-28852-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.174 DEBUG 10016 --- [io-28852-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=, lastname=Doe, email=JohnDoe@acme.com, password=oMoa3VvqnLxW)]
+?[0m?[0;34min else, request = SignUpRequest(name=, lastname=Doe, email=JohnDoe@acme.com, password=oMoa3VvqnLxW)
+?[0m?[0;34m2023-10-15 20:42:23.250 DEBUG 10016 --- [io-28852-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.251 DEBUG 10016 --- [io-28852-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+?[0m?[0;34m2023-10-15 20:42:23.254 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[0m?[1;31m
+Start test 2?[0m
+?[0;34m2023-10-15 20:42:23.286 DEBUG 10016 --- [io-28852-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.288 DEBUG 10016 --- [io-28852-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.290 DEBUG 10016 --- [io-28852-exec-2] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.296 DEBUG 10016 --- [io-28852-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.302 DEBUG 10016 --- [io-28852-exec-2] o.s.web.method.HandlerMethod             : Could not resolve parameter [0] in public final org.springframework.http.ResponseEntity&lt;account.presentation.SignUpResponse&gt; account.presentation.DemoController.register(account.presentation.SignUpRequest): JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter name; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter name
+?[0m?[0;34m at [Source: (PushbackInputStream); line: 1, column: 71]
+?[0m?[0;34m2023-10-15 20:42:23.305  WARN 10016 --- [io-28852-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter name; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter name&lt;LF&gt; at [Source: (PushbackInputStream); line: 1, column: 71]]
+?[0m?[0;34m2023-10-15 20:42:23.305 DEBUG 10016 --- [io-28852-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[0m?[0;34m2023-10-15 20:42:23.315 DEBUG 10016 --- [io-28852-exec-2] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.318 DEBUG 10016 --- [io-28852-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+?[0m?[0;34m2023-10-15 20:42:23.324 DEBUG 10016 --- [io-28852-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.325 DEBUG 10016 --- [io-28852-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Sun Oct 15 20:42:23 UZT 2023, status=400, error=Bad Request, message=JSON parse error: Ca (truncated)...]
+?[0m?[0;34m2023-10-15 20:42:23.348 DEBUG 10016 --- [io-28852-exec-2] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 400
+?[1;31m
+Start test 3?[0m
+?[0;34m2023-10-15 20:42:23.364 DEBUG 10016 --- [io-28852-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.365 DEBUG 10016 --- [io-28852-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.367 DEBUG 10016 --- [io-28852-exec-3] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.368 DEBUG 10016 --- [io-28852-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.371 DEBUG 10016 --- [io-28852-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=John, lastname=, email=JohnDoe@acme.com, password=oMoa3VvqnLxW)]
+?[0m?[0;34min else, request = SignUpRequest(name=John, lastname=, email=JohnDoe@acme.com, password=oMoa3VvqnLxW)
+?[0m?[0;34m2023-10-15 20:42:23.375 DEBUG 10016 --- [io-28852-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.375 DEBUG 10016 --- [io-28852-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+?[0m?[0;34m2023-10-15 20:42:23.375 DEBUG 10016 --- [io-28852-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[1;31m
+Start test 4?[0m
+?[0;34m2023-10-15 20:42:23.387 DEBUG 10016 --- [io-28852-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.388 DEBUG 10016 --- [io-28852-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.388 DEBUG 10016 --- [io-28852-exec-4] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.390 DEBUG 10016 --- [io-28852-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.394 DEBUG 10016 --- [io-28852-exec-4] o.s.web.method.HandlerMethod             : Could not resolve parameter [0] in public final org.springframework.http.ResponseEntity&lt;account.presentation.SignUpResponse&gt; account.presentation.DemoController.register(account.presentation.SignUpRequest): JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter lastname; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter lastname
+?[0m?[0;34m at [Source: (PushbackInputStream); line: 1, column: 68]
+?[0m?[0;34m2023-10-15 20:42:23.400  WARN 10016 --- [io-28852-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter lastname; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter lastname&lt;LF&gt; at [Source: (PushbackInputStream); line: 1, column: 68]]
+?[0m?[0;34m2023-10-15 20:42:23.401 DEBUG 10016 --- [io-28852-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[0m?[0;34m2023-10-15 20:42:23.405 DEBUG 10016 --- [io-28852-exec-4] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.408 DEBUG 10016 --- [io-28852-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+?[0m?[0;34m2023-10-15 20:42:23.414 DEBUG 10016 --- [io-28852-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.416 DEBUG 10016 --- [io-28852-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Sun Oct 15 20:42:23 UZT 2023, status=400, error=Bad Request, message=JSON parse error: Ca (truncated)...]
+?[0m?[0;34m2023-10-15 20:42:23.431 DEBUG 10016 --- [io-28852-exec-4] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 400
+?[1;31m
+Start test 5?[0m
+?[0;34m2023-10-15 20:42:23.453 DEBUG 10016 --- [io-28852-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.455 DEBUG 10016 --- [io-28852-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.457 DEBUG 10016 --- [io-28852-exec-5] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.458 DEBUG 10016 --- [io-28852-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.467 DEBUG 10016 --- [io-28852-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=John, lastname=Doe, email=, password=oMoa3VvqnLxW)]
+?[0m?[0;34min else, request = SignUpRequest(name=John, lastname=Doe, email=, password=oMoa3VvqnLxW)
+?[0m?[0;34m2023-10-15 20:42:23.555 DEBUG 10016 --- [io-28852-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.556 DEBUG 10016 --- [io-28852-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+?[0m?[0;34m2023-10-15 20:42:23.556 DEBUG 10016 --- [io-28852-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[1;31m
+Start test 6?[0m
+?[0;34m2023-10-15 20:42:23.566 DEBUG 10016 --- [io-28852-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.567 DEBUG 10016 --- [io-28852-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.568 DEBUG 10016 --- [io-28852-exec-6] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.569 DEBUG 10016 --- [io-28852-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.571 DEBUG 10016 --- [io-28852-exec-6] o.s.web.method.HandlerMethod             : Could not resolve parameter [0] in public final org.springframework.http.ResponseEntity&lt;account.presentation.SignUpResponse&gt; account.presentation.DemoController.register(account.presentation.SignUpRequest): JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter email; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter email
+?[0m?[0;34m at [Source: (PushbackInputStream); line: 1, column: 58]
+?[0m?[0;34m2023-10-15 20:42:23.572  WARN 10016 --- [io-28852-exec-6] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter email; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter email&lt;LF&gt; at [Source: (PushbackInputStream); line: 1, column: 58]]
+?[0m?[0;34m2023-10-15 20:42:23.573 DEBUG 10016 --- [io-28852-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[0m?[0;34m2023-10-15 20:42:23.574 DEBUG 10016 --- [io-28852-exec-6] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.578 DEBUG 10016 --- [io-28852-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+?[0m?[0;34m2023-10-15 20:42:23.579 DEBUG 10016 --- [io-28852-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.580 DEBUG 10016 --- [io-28852-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Sun Oct 15 20:42:23 UZT 2023, status=400, error=Bad Request, message=JSON parse error: Ca (truncated)...]
+?[0m?[0;34m2023-10-15 20:42:23.581 DEBUG 10016 --- [io-28852-exec-6] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 400
+?[1;31m
+Start test 7?[0m
+?[0;34m2023-10-15 20:42:23.589 DEBUG 10016 --- [io-28852-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.591 DEBUG 10016 --- [io-28852-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.594 DEBUG 10016 --- [io-28852-exec-7] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.595 DEBUG 10016 --- [io-28852-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.597 DEBUG 10016 --- [io-28852-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=)]
+?[0m?[0;34min else, request = SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=)
+?[0m?[0;34m2023-10-15 20:42:23.598 DEBUG 10016 --- [io-28852-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.599 DEBUG 10016 --- [io-28852-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+?[0m?[0;34m2023-10-15 20:42:23.600 DEBUG 10016 --- [io-28852-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[1;31m
+Start test 8?[0m
+?[0;34m2023-10-15 20:42:23.611 DEBUG 10016 --- [io-28852-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.612 DEBUG 10016 --- [io-28852-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.612 DEBUG 10016 --- [io-28852-exec-8] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.613 DEBUG 10016 --- [io-28852-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.616 DEBUG 10016 --- [io-28852-exec-8] o.s.web.method.HandlerMethod             : Could not resolve parameter [0] in public final org.springframework.http.ResponseEntity&lt;account.presentation.SignUpResponse&gt; account.presentation.DemoController.register(account.presentation.SignUpRequest): JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter password; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter password
+?[0m?[0;34m at [Source: (PushbackInputStream); line: 1, column: 59]
+?[0m?[0;34m2023-10-15 20:42:23.617  WARN 10016 --- [io-28852-exec-8] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter password; nested exception is com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `account.presentation.SignUpRequest`, problem: Parameter specified as non-null is null: method account.presentation.SignUpRequest.&lt;init&gt;, parameter password&lt;LF&gt; at [Source: (PushbackInputStream); line: 1, column: 59]]
+?[0m?[0;34m2023-10-15 20:42:23.618 DEBUG 10016 --- [io-28852-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[0m?[0;34m2023-10-15 20:42:23.620 DEBUG 10016 --- [io-28852-exec-8] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.621 DEBUG 10016 --- [io-28852-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+?[0m?[0;34m2023-10-15 20:42:23.622 DEBUG 10016 --- [io-28852-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.622 DEBUG 10016 --- [io-28852-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Sun Oct 15 20:42:23 UZT 2023, status=400, error=Bad Request, message=JSON parse error: Ca (truncated)...]
+?[0m?[0;34m2023-10-15 20:42:23.628 DEBUG 10016 --- [io-28852-exec-8] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 400
+?[1;31m
+Start test 9?[0m
+?[0;34m2023-10-15 20:42:23.645 DEBUG 10016 --- [io-28852-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.646 DEBUG 10016 --- [io-28852-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.646 DEBUG 10016 --- [io-28852-exec-9] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.648 DEBUG 10016 --- [io-28852-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.649 DEBUG 10016 --- [io-28852-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=John, lastname=Doe, email=johndoeacme.com, password=oMoa3VvqnLxW)]
+?[0m?[0;34min else, request = SignUpRequest(name=John, lastname=Doe, email=johndoeacme.com, password=oMoa3VvqnLxW)
+?[0m?[0;34m2023-10-15 20:42:23.650 DEBUG 10016 --- [io-28852-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.651 DEBUG 10016 --- [io-28852-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+?[0m?[0;34m2023-10-15 20:42:23.651 DEBUG 10016 --- [io-28852-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[1;31m
+Start test 10?[0m
+?[0;34m2023-10-15 20:42:23.661 DEBUG 10016 --- [o-28852-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.662 DEBUG 10016 --- [o-28852-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.664 DEBUG 10016 --- [o-28852-exec-10] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.665 DEBUG 10016 --- [o-28852-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.667 DEBUG 10016 --- [o-28852-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=John, lastname=Doe, email=johndoe@google.com, password=oMoa3VvqnLxW)]
+?[0m?[0;34min else, request = SignUpRequest(name=John, lastname=Doe, email=johndoe@google.com, password=oMoa3VvqnLxW)
+?[0m?[0;34m2023-10-15 20:42:23.669 DEBUG 10016 --- [o-28852-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:23.669 DEBUG 10016 --- [o-28852-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+?[0m?[0;34m2023-10-15 20:42:23.670 DEBUG 10016 --- [o-28852-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 400 BAD_REQUEST
+?[1;31m
+Start test 11?[0m
+?[0m?[0;34m2023-10-15 20:42:23.693 DEBUG 10016 --- [io-28852-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.697 DEBUG 10016 --- [io-28852-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.697 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : POST &quot;/api/auth/signup&quot;, parameters={}
+?[0m?[0;34m2023-10-15 20:42:23.698 DEBUG 10016 --- [io-28852-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to account.presentation.DemoController#register(SignUpRequest)
+?[0m?[0;34m2023-10-15 20:42:23.699 DEBUG 10016 --- [io-28852-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to [SignUpRequest(name=John, lastname=Doe, email=JohnDoe@acme.com, password=PasswordForJanuary)]
+?[0m?[0;34m
+?[0m?[0;34min /register 
+?[0m?[0;34m
+?[0m?[0;34mHibernate: select appuser0_.id as id1_0_, appuser0_.authority as authorit2_0_, appuser0_.email as email3_0_, appuser0_.lastname as lastname4_0_, appuser0_.name as name5_0_, appuser0_.password as password6_0_ from app_user appuser0_
+?[0m?[0;34mHibernate: call next value for hibernate_sequence
+?[0m?[0;34mHibernate: insert into app_user (authority, email, lastname, name, password, id) values (?, ?, ?, ?, ?, ?)
+?[0m?[0;34m2023-10-15 20:42:24.422 DEBUG 10016 --- [io-28852-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+?[0m?[0;34m2023-10-15 20:42:24.433 DEBUG 10016 --- [io-28852-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [SignUpResponse(id=1, name=John, lastname=Doe, email=johndoe@acme.com)]
+?[0m?[0;34m2023-10-15 20:42:24.435 DEBUG 10016 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+?[0m2023-10-15 20:42:24.456 DEBUG 10016 --- [io-28852-exec-2] o.s.web.servlet.DispatcherServlet        : POST &quot;/actuator/shutdown&quot;, parameters={}
+2023-10-15 20:42:24.461 DEBUG 10016 --- [io-28852-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Read &quot;application/json;charset=UTF-8&quot; to []
+2023-10-15 20:42:24.471 DEBUG 10016 --- [io-28852-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/vnd.spring-boot.actuator.v3+json', given [*/*] and supported [application/vnd.spring-boot.actuator.v3+json, application/vnd.spring-boot.actuator.v2+json, application/json]
+2023-10-15 20:42:24.472 DEBUG 10016 --- [io-28852-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{message=Shutting down, bye...}]
+2023-10-15 20:42:24.474 DEBUG 10016 --- [io-28852-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+</pre>
 </span>
 </div>
 </div>
@@ -202,7 +364,7 @@ Start test 1?[0m
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 7.3.3</a> at Oct 10, 2023, 7:36:39 PM</p>
+<a href="http://www.gradle.org">Gradle 7.3.3</a> at Oct 15, 2023, 8:42:24 PM</p>
 </div>
 </div>
 </body>
