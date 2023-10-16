@@ -36,7 +36,7 @@ open class SecurityConfig(private val restAuthenticationEntryPoint: RestAuthenti
 
     @Bean
     open fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
+        return BCryptPasswordEncoder(13)
     }
 }
 
