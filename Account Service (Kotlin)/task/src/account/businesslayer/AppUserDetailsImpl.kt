@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AppUserDetailsImpl(private val repository: AppUserRepository) : UserDetailsService {
@@ -18,11 +17,4 @@ class AppUserDetailsImpl(private val repository: AppUserRepository) : UserDetail
         return AppUserAdapter(user)
     }
 
-//    fun addNewUser(user: AppUser): AppUser {
-//        if (repository.findAll().any { user.email.equals(it.email, true) }) {
-//            throw UserExistsException()
-//        }
-//        user.authority = Role.USER.toString()
-//        return repository.save(user)
-//    }
 }
