@@ -941,6 +941,575 @@ files:
       
       }
     learner_created: false
+  - name: src/account/businesslayer/Role.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      enum class Role {
+          USER,
+          ACCOUNTANT,
+          ADMIN
+      }
+    learner_created: true
+  - name: src/account/presentation/AppController.kt
+    visible: true
+    text: |
+      package account.presentation
+      
+      import account.businesslayer.*
+      import account.businesslayer.SecurityConfig
+      import account.persistence.AppUserRepository
+      import account.persistence.PaymentRepository
+      import com.fasterxml.jackson.annotation.JsonProperty
+      import org.springframework.beans.factory.annotation.Autowired
+      import org.springframework.http.HttpStatus
+      import org.springframework.http.ResponseEntity
+      import org.springframework.security.core.annotation.AuthenticationPrincipal
+      import org.springframework.security.core.userdetails.UserDetails
+      import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+      import org.springframework.security.crypto.password.PasswordEncoder
+      import org.springframework.web.bind.annotation.*
+      import java.time.YearMonth
+      import java.time.format.DateTimeFormatter
+      import java.util.*
+      import javax.validation.constraints.NotBlank
+      import javax.validation.constraints.NotEmpty
+      import javax.validation.constraints.Pattern
+      import javax.validation.constraints.Size
+      
+      val breachedPasswords = listOf("PasswordForJanuary", "PasswordForFebruary", "PasswordForMarch", "PasswordForApril",
+          "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
+          "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember")
+      
+      data class SignUpRequest(
+          val name: String,
+          val lastname: String,
+          val email: String,
+          val password: String,
+      )
+      
+      data class SignUpResponse(
+          val id: Long,
+          val name: String,
+          val lastname: String,
+          val email: String,
+      )
+      
+      data class NewPasswordRequest(
+          @field:NotEmpty
+          @field:NotBlank
+          @get:Size(min = 12)
+          @JsonProperty(value = "new_password")
+          val newPassword: String
+      )
+      
+      data class NewPasswordResponse(val email: String, val status: String)
+      
+      data class SinglePaymentResponse(val name: String, val lastname: String, val period: String, val salary: String)
+      
+      
+      data class PaymentRequest(val employee: String, val period: String, val salary: Long)
+      
+      const val strength = 13
+      val passwordEncoder = BCryptPasswordEncoder(strength)
+      
+      
+      @RestController
+      class DemoController(
+          private val repository: AppUserRepository,
+          private val paymentRepository: PaymentRepository,
+      )
+      {
+          @PostMapping("/api/auth/signup")
+          fun register(@RequestBody request: SignUpRequest): ResponseEntity<SignUpResponse>? {
+      
+              return if (request.email.endsWith("@acme.com") && request.name.isNotBlank() && request.lastname.isNotBlank() && request.password.isNotBlank()) {
+                  println("\nin /register \n")
+                  val user = AppUser()
+                  user.name = request.name
+                  user.lastname = request.lastname
+                  user.email = request.email.lowercase()
+                  if (repository.findAll().any { user.email.equals(it.email, true) }) {
+                      throw UserExistsException()
+                  }
+                  if (request.password.trim().length < 12) throw ShortPasswordException()
+                  if (request.password.trim() in breachedPasswords) throw BreachedPasswordException()
+                  user.password = passwordEncoder.encode(request.password.trim())
+                  user.authority = Role.USER.toString()
+                  val newUser = repository.save(user)
+      
+      
+                  ResponseEntity.ok(
+                      newUser.id?.toLong()?.let {
+                          SignUpResponse(
+                              id = it,
+                              name = newUser.name.toString(),
+                              lastname = newUser.lastname.toString(),
+                              email = newUser.email.toString()
+                          )
+                      }
+                  )
+              } else {
+                  println("in else, request = $request")
+                  ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+              }
+          }
+      
+          @PostMapping("api/auth/changepass")
+          fun changePassword(@AuthenticationPrincipal details: UserDetails?, @RequestBody request: NewPasswordRequest): ResponseEntity<NewPasswordResponse> {
+              if (details == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+              val email = details.username
+              val oldPassword = details.password
+              val appUser = repository.findAppUserByEmail(email) ?: throw UserNotFoundException()
+              if (oldPassword != appUser.password) throw UserNotFoundException()
+      
+              val newPassword = request.newPassword
+              println("email = $email")
+              println("oldPassword = $oldPassword, newPassword = $newPassword")
+              println("passwordEncoder.matches(newPassword, oldPassword) = ${passwordEncoder.matches(newPassword, appUser.password)}")
+              if (newPassword.trim().length < 12) throw ShortPasswordException()
+              if (newPassword.trim() in breachedPasswords) throw BreachedPasswordException()
+              if (passwordEncoder.matches(newPassword, appUser.password)) throw PasswordsNotMatchException()
+      
+              appUser.password = passwordEncoder.encode(request.newPassword.trim())
+              repository.save(appUser)
+              return ResponseEntity.ok(
+                  NewPasswordResponse(details.username, "The password has been updated successfully")
+              )
+          }
+      
+      
+          @PostMapping("api/acct/payments")
+          fun makePayments(@RequestBody payments: List<PaymentRequest>): ResponseEntity<Any> {
+              println("payments = $payments")
+      
+              for (payment in payments) {
+                  if (!canAddSinglePayment(payment, paymentRepository, repository)) throw PasswordsNotMatchException()
+              }
+      
+              payments.forEach {
+                  savePaymentDAO(it, paymentRepository)
+              }
+      
+              return ResponseEntity.ok(
+                  mapOf("status" to "Added successfully!")
+              )
+          }
+      
+          @PutMapping("api/acct/payments")
+          fun updatePayment(@RequestBody payment: PaymentRequest): ResponseEntity<Any> {
+              println("payment = $payment")
+              return if (isDateAndSalaryValid(payment, paymentRepository)) {
+                  val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
+                  val yearMonth = YearMonth.parse(payment.period.trim().toString(), formatter)
+                  val paymentDAO = paymentRepository.findPaymentByEmployeeIgnoreCaseAndPeriod(payment.employee, yearMonth) ?: throw PasswordsNotMatchException()
+                  paymentDAO.salary = payment.salary
+                  paymentRepository.save(paymentDAO)
+                  ResponseEntity.ok(
+                      mapOf("status" to "Updated successfully!")
+                  )
+              } else {
+                  throw PasswordsNotMatchException()
+              }
+          }
+      
+          @GetMapping("api/empl/payment")
+          fun getEmployeePayments(
+              @AuthenticationPrincipal details: UserDetails?,
+              @RequestParam(required = false)
+              @Pattern(regexp = "^(0[1-9]|1[0-2])-(19|20)\\d{2}$", message = "Wrong date!")
+              period: String?
+          ): ResponseEntity<Any> {
+              if (details == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+              val email = details.username
+              val password = passwordEncoder.encode(details.password)
+      
+              val appUser = repository.findAppUserByEmail(details.username) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+              println("appUser.password = ${appUser.password}, password = $password")
+              println("passwordEncoder.matches(password, user.password) = ${passwordEncoder.matches(password, appUser.password)}")
+              if (password.trim().length < 12) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+              if (password.trim() in breachedPasswords) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      
+              var emplPayments = paymentRepository.findPaymentByEmployeeIgnoreCase(details.username)
+              if (period != null) {
+                  try {
+                      val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
+                      val yearMonth = YearMonth.parse(period.trim(), formatter)
+                      emplPayments = emplPayments.filter { it.period == yearMonth }
+                  } catch (e:Exception) {
+                      throw PasswordsNotMatchException()
+                  }
+              }
+              println("emplPayments = $emplPayments")
+      
+              val listOfEmplPayments = mutableListOf<SinglePaymentResponse>()
+      
+              val formatter = DateTimeFormatter.ofPattern("MMMM-yyyy", Locale.ENGLISH)
+              emplPayments.forEach {
+                  listOfEmplPayments.add(
+                      SinglePaymentResponse(
+                          name = appUser.name.toString(),
+                          lastname = appUser.lastname.toString(),
+                          period = it.period.format(formatter),
+                          salary = "${it.salary / 100} dollar(s) ${it.salary % 100} cent(s)",
+                      )
+                  )
+              }
+              return if (listOfEmplPayments.size == 1) ResponseEntity.ok(listOfEmplPayments[0])
+              else ResponseEntity.ok(listOfEmplPayments.reversed())
+          }
+      }
+      
+      
+      fun savePaymentDAO(payment: PaymentRequest, paymentRepository: PaymentRepository) {
+          val paymentDAO = Payment()
+          paymentDAO.employee = payment.employee
+          val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
+          val yearMonth = YearMonth.parse(payment.period.trim().toString(), formatter)
+          paymentDAO.period = yearMonth
+          paymentDAO.salary = payment.salary
+          paymentRepository.save(paymentDAO)
+      }
+      
+      fun canAddSinglePayment(payment: PaymentRequest, paymentRepository: PaymentRepository, repository: AppUserRepository): Boolean {
+          // An employee must be among the users of our service;
+          val appUser = payment.employee.let { repository.findAppUserByEmail(it) } ?: return false
+      
+          // Salary is calculated in cents and cannot be negative
+          // The period for which the salary is paid must be unique for each employee (for POST)
+          return if (isDateAndSalaryValid(payment, paymentRepository)){
+              val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
+              val yearMonth = YearMonth.parse(payment.period.trim().toString(), formatter)
+              val prevPayment = paymentRepository.findPaymentByEmployeeIgnoreCaseAndPeriod(payment.employee, yearMonth)
+              prevPayment == null
+          } else {
+              false
+          }
+      }
+      
+      
+      fun isDateAndSalaryValid(payment: PaymentRequest, paymentRepository: PaymentRepository): Boolean {
+          // Salary is calculated in cents and cannot be negative
+          try {
+              val salary = payment.salary
+              if (salary < 0) return false
+      
+              // The period for which the salary is paid must be unique for each employee (for POST)
+              println("payment.period = ${payment.period}, ${payment.period.length}")
+              val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
+              val yearMonth = YearMonth.parse(payment.period.trim().toString(), formatter)
+              return true
+          } catch (e:Exception) {
+              return false
+          }
+      }
+      
+      fun isValidPassword(password: String): Boolean {
+          // Verify that user passwords contain at least 12 characters;
+          val trimmedPass = password.trim()
+          return !(trimmedPass.length < 12 || trimmedPass in breachedPasswords)
+      }
+      
+      
+      
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //    @GetMapping("/api/empl/payment")
+      //    fun authenticate(@AuthenticationPrincipal details: UserDetails?): ResponseEntity<SignUpResponse>? {
+      //        if (details == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      //        val email = details.username
+      //        val password = passwordEncoder.encode(details.password)
+      //        val user = repository.findAppUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      //        println("user.password = ${user.password}, password = $password")
+      //        println("passwordEncoder.matches(password, user.password) = ${passwordEncoder.matches(password, user.password)}")
+      //        if (password.trim().length < 12) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      //        if (password.trim() in breachedPasswords) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      ////        if (password != user.password) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      ////        if (!passwordEncoder.matches(password, user?.password)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      //        return ResponseEntity.ok(
+      //            user.id?.toLong()?.let {
+      //                SignUpResponse(
+      //                    id = it,
+      //                    name = user.name.toString(),
+      //                    lastname = user.lastname.toString(),
+      //                    email = user.email.toString()
+      //                )
+      //            }
+      //        )
+      //    }
+    learner_created: true
+  - name: src/account/businesslayer/AppUserAdapter.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      import org.springframework.security.core.GrantedAuthority
+      import org.springframework.security.core.authority.SimpleGrantedAuthority
+      import org.springframework.security.core.userdetails.UserDetails
+      
+      class AppUserAdapter(private val user: AppUser) : UserDetails {
+          override fun getAuthorities(): Collection<GrantedAuthority> {
+              return listOf(SimpleGrantedAuthority(user.authority))
+          }
+      
+          override fun getPassword(): String = requireNotNull(user.password)
+      
+          override fun getUsername(): String = requireNotNull(user.email)
+      
+          override fun isAccountNonExpired(): Boolean = true
+      
+          override fun isAccountNonLocked(): Boolean = true
+      
+          override fun isCredentialsNonExpired(): Boolean = true
+      
+          override fun isEnabled(): Boolean = true
+      }
+    learner_created: true
+  - name: src/account/businesslayer/YearMonthDateConverter.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      import java.sql.Date
+      import java.time.Instant
+      import java.time.YearMonth
+      import java.time.ZoneId
+      import javax.persistence.AttributeConverter
+      import javax.persistence.Converter
+      
+      
+      @Converter
+      class YearMonthDateConverter : AttributeConverter<YearMonth, Date> {
+      
+          override fun convertToDatabaseColumn(attribute: YearMonth?): Date? {
+              return if (attribute != null) Date.valueOf(attribute.atDay(1)) else null
+          }
+      
+          override fun convertToEntityAttribute(dbData: Date?): YearMonth? {
+              return if (dbData != null) YearMonth.from(
+                  Instant
+                      .ofEpochMilli(dbData.time)
+                      .atZone(ZoneId.systemDefault())
+                      .toLocalDateTime()
+              ) else null
+          }
+      
+      }
+    learner_created: true
+  - name: src/account/businesslayer/SecurityConfig.kt
+    visible: true
+    text: |+
+      package account.businesslayer
+      
+      import org.springframework.context.annotation.Bean
+      import org.springframework.context.annotation.Configuration
+      import org.springframework.http.HttpMethod
+      import org.springframework.security.config.Customizer
+      import org.springframework.security.config.annotation.web.builders.HttpSecurity
+      import org.springframework.security.config.http.SessionCreationPolicy
+      import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+      import org.springframework.security.crypto.password.PasswordEncoder
+      import org.springframework.security.web.SecurityFilterChain
+      import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+      
+      @Configuration
+      open class SecurityConfig(private val restAuthenticationEntryPoint: RestAuthenticationEntryPoint) {
+      
+          @Bean
+          @Throws(Exception::class)
+          open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+              http
+                  .httpBasic(Customizer.withDefaults()) // Default Basic auth config
+                  .exceptionHandling { ex -> ex.authenticationEntryPoint(restAuthenticationEntryPoint) }
+                  .csrf { it.disable() }                // for POST requests via Postman
+                  .headers { headers -> headers.frameOptions().disable() } // for H2 console
+                  .authorizeHttpRequests { auth ->
+                      auth.mvcMatchers("/h2-console/**").permitAll()
+                      auth.mvcMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
+                      auth.mvcMatchers(HttpMethod.GET, "/api/empl/payment").authenticated()
+                      auth.mvcMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
+                      auth.mvcMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
+                      auth.mvcMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
+                  }
+                  .sessionManagement { sessions ->
+                      sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session
+                  }
+      
+              return http.build()
+          }
+      
+          @Bean
+          open fun passwordEncoder(): PasswordEncoder {
+              return BCryptPasswordEncoder(13)
+          }
+      }
+    
+    
+    
+    learner_created: true
+  - name: src/account/businesslayer/AppUserDetailsImpl.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      import account.persistence.AppUserRepository
+      import org.springframework.security.core.userdetails.UserDetails
+      import org.springframework.security.core.userdetails.UserDetailsService
+      import org.springframework.security.core.userdetails.UsernameNotFoundException
+      import org.springframework.stereotype.Service
+      
+      @Service
+      class AppUserDetailsImpl(private val repository: AppUserRepository) : UserDetailsService {
+      
+          @Throws(UsernameNotFoundException::class)
+          override fun loadUserByUsername(email: String): UserDetails {
+              val user = repository.findAppUserByEmail(email.lowercase())
+                  ?: throw UsernameNotFoundException("User not found: $email")
+      
+              return AppUserAdapter(user)
+          }
+      
+      }
+    learner_created: true
+  - name: src/account/businesslayer/UserExceptions.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      import org.springframework.http.HttpStatus
+      import org.springframework.web.bind.annotation.ResponseStatus
+      
+      @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "User exist!")
+      class UserExistsException : RuntimeException()
+      
+      @ResponseStatus(code = HttpStatus.UNAUTHORIZED, reason = "User not found!")
+      class UserNotFoundException : RuntimeException()
+      
+      @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Password length must be 12 chars minimum!")
+      class ShortPasswordException : RuntimeException()
+      
+      @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "The password is in the hacker's database!")
+      class BreachedPasswordException : RuntimeException()
+      
+      @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "The passwords must be different!")
+      class PasswordsNotMatchException : RuntimeException()
+    learner_created: true
+  - name: src/account/persistence/AppUserRepository.kt
+    visible: true
+    text: |-
+      package account.persistence
+      
+      import account.businesslayer.AppUser
+      import org.springframework.data.repository.CrudRepository
+      
+      interface AppUserRepository : CrudRepository<AppUser, Int> {
+          fun findAppUserByEmail(email: String): AppUser?
+      }
+    learner_created: true
+  - name: src/account/businesslayer/AppUser.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      import javax.persistence.Entity
+      import javax.persistence.GeneratedValue
+      import javax.persistence.Id
+      
+      
+      @Entity
+      class AppUser(
+          @Id @GeneratedValue var id: Long? = null,
+          var name: String? = null,
+          var lastname: String? = null,
+          var email: String? = null,
+          var password: String? = null,
+          var authority: String? = null
+      )
+    learner_created: true
+  - name: src/account/businesslayer/Payment.kt
+    visible: true
+    text: |+
+      package account.businesslayer
+      
+      import com.fasterxml.jackson.annotation.JsonFormat
+      import com.fasterxml.jackson.annotation.JsonIgnore
+      import java.time.YearMonth
+      import java.time.YearMonth.now
+      import java.util.Objects
+      import javax.persistence.*
+      
+      
+      
+      @Entity
+      @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["employee", "period"])])
+      data class Payment(
+      
+          @Id @GeneratedValue var id: Long? = null,
+      
+          @field:Column
+          var employee: String = "",
+      
+          @field:Column
+          var period: YearMonth = YearMonth.now(),
+      
+          @field:Column
+          var salary: Long = 0
+      
+      ) {
+          override fun equals(other: Any?): Boolean {
+              if (this === other) return true
+              if (other == null || javaClass != other.javaClass) return false
+      
+              val payment: Payment = other as Payment
+      
+              return Objects.equals(employee, payment.employee) && Objects.equals(period, payment.period)
+          }
+      
+          override fun hashCode(): Int {
+              return Objects.hash(employee, period)
+          }
+      }
+    
+    learner_created: true
+  - name: src/account/businesslayer/RestAuthenticationEntryPoint.kt
+    visible: true
+    text: |-
+      package account.businesslayer
+      
+      import org.springframework.security.core.AuthenticationException
+      import org.springframework.security.web.AuthenticationEntryPoint
+      import org.springframework.stereotype.Component
+      import javax.servlet.http.HttpServletRequest
+      import javax.servlet.http.HttpServletResponse
+      
+      @Component
+      class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
+      
+          override fun commence(
+              request: HttpServletRequest?,
+              response: HttpServletResponse,
+              authException: AuthenticationException
+          ) {
+              response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.message)
+          }
+      }
+    learner_created: true
+  - name: src/account/persistence/PaymentRepository.kt
+    visible: true
+    text: |-
+      package account.persistence
+      
+      import account.businesslayer.Payment
+      import org.springframework.data.repository.CrudRepository
+      import org.springframework.stereotype.Repository
+      import java.time.YearMonth
+      
+      @Repository
+      interface PaymentRepository : CrudRepository<Payment, Long> {
+          fun findPaymentByEmployeeIgnoreCase(email: String): List<Payment>
+          fun findPaymentByEmployeeIgnoreCaseAndPeriod(email: String, period: YearMonth): Payment?
+      }
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/27100#comment
 status: Unchecked
 record: -1
