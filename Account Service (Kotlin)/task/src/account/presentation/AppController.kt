@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -30,6 +31,7 @@ data class SignUpRequest(
     val lastname: String,
     val email: String,
     val password: String,
+    val roles: List<String>?
 )
 
 data class SignUpResponse(
@@ -37,6 +39,7 @@ data class SignUpResponse(
     val name: String,
     val lastname: String,
     val email: String,
+    val roles: MutableList<Role>
 )
 
 data class NewPasswordRequest(
@@ -66,6 +69,7 @@ class DemoController(
 {
     @PostMapping("/api/auth/signup")
     fun register(@RequestBody request: SignUpRequest): ResponseEntity<SignUpResponse>? {
+        println("signUpRequest = $request")
 
         return if (request.email.endsWith("@acme.com") && request.name.isNotBlank() && request.lastname.isNotBlank() && request.password.isNotBlank()) {
             println("\nin /register \n")
@@ -79,9 +83,28 @@ class DemoController(
             if (request.password.trim().length < 12) throw ShortPasswordException()
             if (request.password.trim() in breachedPasswords) throw BreachedPasswordException()
             user.password = passwordEncoder.encode(request.password.trim())
-            user.authority = Role.USER.toString()
-            val newUser = repository.save(user)
 
+            println("request.roles = ${request.roles}")
+            println("user.id = ${user.id}")
+
+            if (request.roles == null) {
+                user.roles.add(Role.ROLE_USER)
+            } else {
+                request.roles.forEach {
+                    when (it) {
+                        "ROLE_USER" -> user.roles.add(Role.ROLE_USER)
+                        "ROLE_ACCOUNTANT" -> user.roles.add(Role.ROLE_ACCOUNTANT)
+                        "ROLE_ADMINISTRATOR" -> user.roles.add(Role.ROLE_ADMINISTRATOR)
+                    }
+                }
+            }
+
+            var newUser = repository.save(user)
+            if (newUser.id == 1.toLong()) {
+                newUser.roles.remove(Role.ROLE_USER)
+                newUser.roles.add(Role.ROLE_ADMINISTRATOR)
+            }
+            newUser = repository.save(newUser)
 
             ResponseEntity.ok(
                 newUser.id?.toLong()?.let {
@@ -89,7 +112,8 @@ class DemoController(
                         id = it,
                         name = newUser.name.toString(),
                         lastname = newUser.lastname.toString(),
-                        email = newUser.email.toString()
+                        email = newUser.email.toString(),
+                        roles = newUser.roles
                     )
                 }
             )
@@ -99,71 +123,17 @@ class DemoController(
         }
     }
 
-    @PostMapping("api/auth/changepass")
-    fun changePassword(@AuthenticationPrincipal details: UserDetails?, @RequestBody request: NewPasswordRequest): ResponseEntity<NewPasswordResponse> {
-        if (details == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-        val email = details.username
-        val oldPassword = details.password
-        val appUser = repository.findAppUserByEmail(email) ?: throw UserNotFoundException()
-        if (oldPassword != appUser.password) throw UserNotFoundException()
-
-        val newPassword = request.newPassword
-        println("email = $email")
-        println("oldPassword = $oldPassword, newPassword = $newPassword")
-        println("passwordEncoder.matches(newPassword, oldPassword) = ${passwordEncoder.matches(newPassword, appUser.password)}")
-        if (newPassword.trim().length < 12) throw ShortPasswordException()
-        if (newPassword.trim() in breachedPasswords) throw BreachedPasswordException()
-        if (passwordEncoder.matches(newPassword, appUser.password)) throw PasswordsNotMatchException()
-
-        appUser.password = passwordEncoder.encode(request.newPassword.trim())
-        repository.save(appUser)
-        return ResponseEntity.ok(
-            NewPasswordResponse(details.username, "The password has been updated successfully")
-        )
-    }
-
-
-    @PostMapping("api/acct/payments")
-    fun makePayments(@RequestBody payments: List<PaymentRequest>): ResponseEntity<Any> {
-        println("payments = $payments")
-
-        for (payment in payments) {
-            if (!canAddSinglePayment(payment, paymentRepository, repository)) throw PasswordsNotMatchException()
-        }
-
-        payments.forEach {
-            savePaymentDAO(it, paymentRepository)
-        }
-
-        return ResponseEntity.ok(
-            mapOf("status" to "Added successfully!")
-        )
-    }
-
-    @PutMapping("api/acct/payments")
-    fun updatePayment(@RequestBody payment: PaymentRequest): ResponseEntity<Any> {
-        println("payment = $payment")
-        return if (isDateAndSalaryValid(payment, paymentRepository)) {
-            val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
-            val yearMonth = YearMonth.parse(payment.period.trim().toString(), formatter)
-            val paymentDAO = paymentRepository.findPaymentByEmployeeIgnoreCaseAndPeriod(payment.employee, yearMonth) ?: throw PasswordsNotMatchException()
-            paymentDAO.salary = payment.salary
-            paymentRepository.save(paymentDAO)
-            ResponseEntity.ok(
-                mapOf("status" to "Updated successfully!")
-            )
-        } else {
-            throw PasswordsNotMatchException()
-        }
-    }
-
     @GetMapping("api/empl/payment")
     fun getEmployeePayments(
         @AuthenticationPrincipal details: UserDetails?,
         @RequestParam(required = false)
-        @Pattern(regexp = "^(0[1-9]|1[0-2])-(19|20)\\d{2}$", message = "Wrong date!")
+//        @Pattern(regexp = "^(0[1-9]|1[0-2])-(19|20)\\d{2}$", message = "Wrong date!")
         period: String?
     ): ResponseEntity<Any> {
+        println()
+        println("@GetMapping(\"api/empl/payment\")")
+        println("userDetails = $details")
+
         if (details == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val email = details.username
         val password = passwordEncoder.encode(details.password)
@@ -202,6 +172,86 @@ class DemoController(
         return if (listOfEmplPayments.size == 1) ResponseEntity.ok(listOfEmplPayments[0])
         else ResponseEntity.ok(listOfEmplPayments.reversed())
     }
+
+    @PostMapping("api/auth/changepass")
+    fun changePassword(@AuthenticationPrincipal details: UserDetails?, @RequestBody request: NewPasswordRequest): ResponseEntity<NewPasswordResponse> {
+        if (details == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val email = details.username
+        val oldPassword = details.password
+        val appUser = repository.findAppUserByEmail(email) ?: throw UserNotFoundException()
+        if (oldPassword != appUser.password) throw UserNotFoundException()
+
+        val newPassword = request.newPassword
+        println("email = $email")
+        println("oldPassword = $oldPassword, newPassword = $newPassword")
+        println("passwordEncoder.matches(newPassword, oldPassword) = ${passwordEncoder.matches(newPassword, appUser.password)}")
+        if (newPassword.trim().length < 12) throw ShortPasswordException()
+        if (newPassword.trim() in breachedPasswords) throw BreachedPasswordException()
+        if (passwordEncoder.matches(newPassword, appUser.password)) throw PasswordsNotMatchException()
+
+        appUser.password = passwordEncoder.encode(request.newPassword.trim())
+        repository.save(appUser)
+        return ResponseEntity.ok(
+            NewPasswordResponse(details.username, "The password has been updated successfully")
+        )
+    }
+
+    @PostMapping("api/acct/payments")
+    fun makePayments(@RequestBody payments: List<PaymentRequest>): ResponseEntity<Any> {
+        println("payments = $payments")
+
+        for (payment in payments) {
+            if (!canAddSinglePayment(payment, paymentRepository, repository)) throw PasswordsNotMatchException()
+        }
+
+        payments.forEach {
+            savePaymentDAO(it, paymentRepository)
+        }
+
+        return ResponseEntity.ok(
+            mapOf("status" to "Added successfully!")
+        )
+    }
+
+    @PutMapping("api/acct/payments")
+    fun updatePayment(@RequestBody payment: PaymentRequest): ResponseEntity<Any> {
+        println("payment = $payment")
+        return if (isDateAndSalaryValid(payment, paymentRepository)) {
+            val formatter = DateTimeFormatter.ofPattern("MM-yyyy")
+            val yearMonth = YearMonth.parse(payment.period.trim().toString(), formatter)
+            val paymentDAO = paymentRepository.findPaymentByEmployeeIgnoreCaseAndPeriod(payment.employee, yearMonth) ?: throw PasswordsNotMatchException()
+            paymentDAO.salary = payment.salary
+            paymentRepository.save(paymentDAO)
+            ResponseEntity.ok(
+                mapOf("status" to "Updated successfully!")
+            )
+        } else {
+            throw PasswordsNotMatchException()
+        }
+    }
+
+    @DeleteMapping("/api/admin/user/{email}")
+    fun deleteUser(@PathVariable email: String): ResponseEntity<Map<String, String>> {
+        println()
+        println("@DeleteMapping(\"/api/admin/user/{email}\")")
+        println("email = $email")
+        val user = repository.findAppUserByEmail(email.lowercase().trim())
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
+
+        if (user.roles.contains(Role.ROLE_ADMINISTRATOR))
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!")
+
+        repository.delete(user)
+        return ResponseEntity.ok(mapOf("user" to email, "status" to "Deleted successfully!"))
+    }
+    @GetMapping("/api/admin/user/")
+    fun getAllRoles(): ResponseEntity<MutableList<AppUser>> {
+        println()
+        println("@GetMapping(\"/api/admin/user/\")")
+        return ResponseEntity.ok(repository.findAll() as MutableList<AppUser>)
+    }
+
+
 }
 
 

@@ -1,8 +1,9 @@
 package account.businesslayer
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.hibernate.annotations.SortNatural
+import javax.persistence.*
 
 
 @Entity
@@ -12,5 +13,11 @@ class AppUser(
     var lastname: String? = null,
     var email: String? = null,
     var password: String? = null,
-    var authority: String? = null
+
+    @field:JsonIgnore
+    @field:Enumerated(EnumType.STRING)
+    @field:ElementCollection(fetch = FetchType.EAGER)
+    @field:SortNatural
+    @field:Column
+    val roles: MutableList<Role> = mutableListOf()
 )

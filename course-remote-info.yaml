@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://cogniterra.org/media/attachments/lesson/27566/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Tue, 17 Oct 2023 06:39:51 UTC"
+update_date: "Wed, 18 Oct 2023 07:50:04 UTC"
 stages:
   - id: 1861
     step: 27096
@@ -30,12 +30,12 @@ topics:
   0:
     - title: Computer algorithms
       theory_id: 16547
+    - title: World Wide Web
+      theory_id: 6633
     - title: "Write, compile, and run"
       theory_id: 3739
     - title: Introduction to Operating systems
       theory_id: 9704
-    - title: World Wide Web
-      theory_id: 6633
     - title: Computer programming
       theory_id: 8739
     - title: Introduction to Kotlin
@@ -51,14 +51,14 @@ topics:
   1:
     - title: Modulo division
       theory_id: 10586
+    - title: HyperText Transfer Protocol
+      theory_id: 6569
     - title: "JVM, JRE, and JDK"
       theory_id: 3499
     - title: Command line overview
       theory_id: 8977
     - title: Parameters and Options
       theory_id: 9746
-    - title: HyperText Transfer Protocol
-      theory_id: 6569
     - title: Introduction to Spring Boot
       theory_id: 7944
     - title: Getting started with Spring Boot
@@ -125,6 +125,8 @@ topics:
       theory_id: 32430
     - title: Getting authenticated user details
       theory_id: 16710
+    - title: Web development
+      theory_id: 13931
     - title: Introduction to OOP
       theory_id: 3614
     - title: Build tools
@@ -139,8 +141,6 @@ topics:
       theory_id: 7917
     - title: Dependency management
       theory_id: 5076
-    - title: Web development
-      theory_id: 13931
     - title: Libraries
       theory_id: 8504
     - title: Frameworks

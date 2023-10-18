@@ -6,7 +6,15 @@ import org.springframework.security.core.userdetails.UserDetails
 
 class AppUserAdapter(private val user: AppUser) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        return listOf(SimpleGrantedAuthority(user.authority))
+        val authorities: MutableList<GrantedAuthority> = ArrayList()
+
+        user.roles.forEach { role: Role ->
+            authorities.add(
+                SimpleGrantedAuthority(role.toString())
+            )
+        }
+
+        return authorities
     }
 
     override fun getPassword(): String = requireNotNull(user.password)
@@ -20,4 +28,12 @@ class AppUserAdapter(private val user: AppUser) : UserDetails {
     override fun isCredentialsNonExpired(): Boolean = true
 
     override fun isEnabled(): Boolean = true
+
+    fun grantAuthority(authority: Role) {
+        user.roles.add(authority)
+    }
+
+    fun removeAuthority(authority: Role) {
+        user.roles.remove(authority)
+    }
 }

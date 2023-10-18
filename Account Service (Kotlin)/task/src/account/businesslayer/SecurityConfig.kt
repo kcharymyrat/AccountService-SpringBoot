@@ -25,10 +25,13 @@ open class SecurityConfig(private val restAuthenticationEntryPoint: RestAuthenti
             .authorizeHttpRequests { auth ->
                 auth.mvcMatchers("/h2-console/**").permitAll()
                 auth.mvcMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
-                auth.mvcMatchers(HttpMethod.GET, "/api/empl/payment").authenticated()
+//                auth.mvcMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyRole(Role.ROLE_USER.toString(), Role.ROLE_ADMINISTRATOR.toString())
+                auth.mvcMatchers(HttpMethod.GET, "/api/empl/payment").permitAll()
                 auth.mvcMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
                 auth.mvcMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
                 auth.mvcMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
+//                auth.mvcMatchers(HttpMethod.GET, "/api/admin/user").permitAll()
+//                auth.mvcMatchers(HttpMethod.DELETE, "/api/admin/user").permitAll()
             }
             .sessionManagement { sessions ->
                 sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session
