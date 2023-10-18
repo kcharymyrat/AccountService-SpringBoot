@@ -17,3 +17,6 @@ class BreachedPasswordException : RuntimeException()
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "The passwords must be different!")
 class PasswordsNotMatchException : RuntimeException()
+
+@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "The role was not found!")
+class RoleNotFoundException : RuntimeException()

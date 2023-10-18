@@ -54,8 +54,15 @@ data class NewPasswordResponse(val email: String, val status: String)
 
 data class SinglePaymentResponse(val name: String, val lastname: String, val period: String, val salary: String)
 
-
 data class PaymentRequest(val employee: String, val period: String, val salary: Long)
+
+data class AppUserWithRoles(
+    val id: Long?,
+    val name: String,
+    val lastname: String,
+    val email: String,
+    val roles: MutableList<Role>
+)
 
 const val strength = 13
 val passwordEncoder = BCryptPasswordEncoder(strength)
@@ -230,6 +237,35 @@ class DemoController(
         }
     }
 
+    @GetMapping("/api/admin/user")
+    fun getAllRoles(): ResponseEntity<MutableList<AppUserWithRoles>> {
+        try {
+            println()
+            println("@GetMapping(\"/api/admin/user/\")")
+            val response = mutableListOf<AppUserWithRoles>()
+            val allUsers = repository.findAll()
+            println("allUsers = $allUsers")
+            for (user in allUsers) {
+                response.add(
+                    AppUserWithRoles(
+                        id = user.id,
+                        name = user.name.toString(),
+                        lastname = user.lastname.toString(),
+                        email = user.email.toString(),
+                        roles = user.roles
+                    )
+                )
+            }
+            println("response = $response")
+            return ResponseEntity.ok(response)
+        } catch (e: Exception) {
+            println("exception")
+            throw ResponseStatusException(
+                HttpStatus.FORBIDDEN, "Access Denied!"
+            )
+        }
+    }
+
     @DeleteMapping("/api/admin/user/{email}")
     fun deleteUser(@PathVariable email: String): ResponseEntity<Map<String, String>> {
         println()
@@ -244,14 +280,73 @@ class DemoController(
         repository.delete(user)
         return ResponseEntity.ok(mapOf("user" to email, "status" to "Deleted successfully!"))
     }
-    @GetMapping("/api/admin/user/")
-    fun getAllRoles(): ResponseEntity<MutableList<AppUser>> {
+
+    @PutMapping("/api/admin/user/role")
+    fun updateUserRoles(@RequestBody operation: RoleOperationDTO?): ResponseEntity<AppUser> {
         println()
-        println("@GetMapping(\"/api/admin/user/\")")
-        return ResponseEntity.ok(repository.findAll() as MutableList<AppUser>)
+        println("operation = $operation")
+        if (operation == null) throw ResponseStatusException(
+            HttpStatus.FORBIDDEN, "Access Denied!"
+        )
+        val user = repository.findAppUserByEmail(operation.email.lowercase().trim())
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
+        val appUserAdapter = AppUserAdapter(user)
+        println("user.roles = ${user.roles}")
+
+        val role: Role = checkRole(operation.role)
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Role not found!"
+            )
+
+        if (operation.operation == "GRANT") {
+
+            if (user.roles
+                    .contains(Role.ROLE_ADMINISTRATOR) || role === Role.ROLE_ADMINISTRATOR
+            ) throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "The user cannot combine administrative and business roles!"
+            )
+
+            appUserAdapter.grantAuthority(role)
+            repository.save(user)
+            println("granted roles = ${user.roles}")
+
+        } else if (operation.operation == "REMOVE") {
+
+            if (!user.roles.contains(role)) throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "The user does not have a role!"
+            )
+            if (role == Role.ROLE_ADMINISTRATOR) throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Can't remove ADMINISTRATOR role!"
+            )
+            if (user.roles.size == 1) throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "The user must have at least one role!"
+            )
+
+            appUserAdapter.removeAuthority(role)
+            repository.save(user)
+            println("removed roles = ${user.roles}")
+        }
+
+        println("user.roles = ${user.roles}")
+
+        return ResponseEntity.ok(user)
     }
 
 
+}
+
+
+
+fun checkRole(role: String): Role? {
+    for (r in Role.values()) {
+        if (r.name == String.format("ROLE_%s", role)) {
+            return r
+        }
+    }
+    return null
 }
 
 

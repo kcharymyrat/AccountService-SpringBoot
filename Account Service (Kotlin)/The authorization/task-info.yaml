@@ -1510,9 +1510,15 @@ files:
           fun findPaymentByEmployeeIgnoreCaseAndPeriod(email: String, period: YearMonth): Payment?
       }
     learner_created: true
+  - name: src/account/businesslayer/RoleOperationDTO.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/BeanConfig.kt
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/27100#comment
-status: Failed
+status: Solved
 feedback:
-  message: Execution failed
-  time: "Wed, 18 Oct 2023 08:47:07 UTC"
+  message: Congratulations!
+  time: "Wed, 18 Oct 2023 13:37:08 UTC"
 record: -1

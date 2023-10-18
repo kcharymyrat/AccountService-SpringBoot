@@ -30,7 +30,7 @@ class AppUserAdapter(private val user: AppUser) : UserDetails {
     override fun isEnabled(): Boolean = true
 
     fun grantAuthority(authority: Role) {
-        user.roles.add(authority)
+        user.roles.add(0, authority)
     }
 
     fun removeAuthority(authority: Role) {
