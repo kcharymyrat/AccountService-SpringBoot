@@ -682,7 +682,7 @@ files:
           override fun isEnabled(): Boolean = true
       }
     learner_created: true
-  - name: src/account/businesslayer/SecurityConfig.kt
+  - name: src/account/businesslayer/WebSecurityConfig.kt
     visible: true
     text: |+
       package account.businesslayer

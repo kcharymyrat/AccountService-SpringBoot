@@ -1404,70 +1404,6 @@ files:
       
       }
     learner_created: true
-  - name: src/account/businesslayer/SecurityConfig.kt
-    visible: true
-    text: |+
-      package account.businesslayer
-      
-      import org.springframework.beans.factory.annotation.Autowired
-      import org.springframework.context.annotation.Bean
-      import org.springframework.context.annotation.Configuration
-      import org.springframework.http.HttpMethod
-      import org.springframework.security.config.Customizer
-      import org.springframework.security.config.annotation.web.builders.HttpSecurity
-      import org.springframework.security.config.http.SessionCreationPolicy
-      import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-      import org.springframework.security.crypto.password.PasswordEncoder
-      import org.springframework.security.web.SecurityFilterChain
-      import org.springframework.security.web.access.AccessDeniedHandler
-      import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-      
-      @Configuration
-      open class SecurityConfig(private val restAuthenticationEntryPoint: RestAuthenticationEntryPoint) {
-      
-          @Autowired
-          lateinit var accessDeniedHandler: AccessDeniedHandler
-      
-          @Bean
-          @Throws(Exception::class)
-          open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-              http
-                  .exceptionHandling().accessDeniedHandler(accessDeniedHandler)
-                  .and()
-                  .httpBasic(Customizer.withDefaults()) // Default Basic auth config
-                  .exceptionHandling { ex -> ex.authenticationEntryPoint(restAuthenticationEntryPoint) }
-                  .csrf { it.disable() }                // for POST requests via Postman
-                  .headers { headers -> headers.frameOptions().disable() } // for H2 console
-                  .authorizeHttpRequests { auth ->
-                      auth
-                      .antMatchers(HttpMethod.POST, "/api/auth/singup").permitAll()
-                      .antMatchers(HttpMethod.POST, "/api/auth/changepass").hasAnyAuthority(
-                          Role.ROLE_USER.name,
-                          Role.ROLE_ACCOUNTANT.name,
-                          Role.ROLE_ADMINISTRATOR.name)
-                      .antMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyAuthority(
-                          Role.ROLE_USER.name,
-                          Role.ROLE_ACCOUNTANT.name)
-                      .antMatchers(HttpMethod.POST, "/api/acct/payments").hasAuthority(Role.ROLE_ACCOUNTANT.name)
-                      .antMatchers(HttpMethod.PUT, "/api/acct/payments").hasAuthority(Role.ROLE_ACCOUNTANT.name)
-                      .antMatchers("/api/admin/**").hasAuthority(Role.ROLE_ADMINISTRATOR.name)
-                  }
-                  .sessionManagement { sessions ->
-                      sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session
-                  }
-      
-              return http.build()
-          }
-      
-          @Bean
-          open fun passwordEncoder(): PasswordEncoder {
-              return BCryptPasswordEncoder(13)
-          }
-      }
-    
-    
-    
-    learner_created: true
   - name: src/account/businesslayer/AppUserDetailsImpl.kt
     visible: true
     text: |-
@@ -1665,6 +1601,115 @@ files:
           fun findPaymentByEmployeeIgnoreCaseAndPeriod(email: String, period: YearMonth): Payment?
       }
     learner_created: true
+  - name: src/account/businesslayer/Action.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/Event.kt
+    visible: true
+    learner_created: true
+  - name: src/account/persistence/EventRepository.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/Operation.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/AuditService.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/AppUserService.kt
+    visible: true
+    learner_created: true
+  - name: src/account/persistence/BreachedPasswordRepository.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/BreachedPassword.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/UserAccessDTO.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/Message.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/NewUserPasswordDTO.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/PaymentService.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/EmployeePaymentResponseDTO.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/model/User.kt
+    visible: true
+    learner_created: true
+  - name: src/account/businesslayer/WebSecurityConfig.kt
+    visible: true
+    text: |+
+      package account.businesslayer
+      
+      import org.springframework.beans.factory.annotation.Autowired
+      import org.springframework.context.annotation.Bean
+      import org.springframework.context.annotation.Configuration
+      import org.springframework.http.HttpMethod
+      import org.springframework.security.config.Customizer
+      import org.springframework.security.config.annotation.web.builders.HttpSecurity
+      import org.springframework.security.config.http.SessionCreationPolicy
+      import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+      import org.springframework.security.crypto.password.PasswordEncoder
+      import org.springframework.security.web.SecurityFilterChain
+      import org.springframework.security.web.access.AccessDeniedHandler
+      import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+      
+      @Configuration
+      open class SecurityConfig(private val restAuthenticationEntryPoint: RestAuthenticationEntryPoint) {
+      
+          @Autowired
+          lateinit var accessDeniedHandler: AccessDeniedHandler
+      
+          @Bean
+          @Throws(Exception::class)
+          open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+              http
+                  .exceptionHandling().accessDeniedHandler(accessDeniedHandler)
+                  .and()
+                  .httpBasic(Customizer.withDefaults()) // Default Basic auth config
+                  .exceptionHandling { ex -> ex.authenticationEntryPoint(restAuthenticationEntryPoint) }
+                  .csrf { it.disable() }                // for POST requests via Postman
+                  .headers { headers -> headers.frameOptions().disable() } // for H2 console
+                  .authorizeHttpRequests { auth ->
+                      auth
+                      .antMatchers(HttpMethod.POST, "/api/auth/singup").permitAll()
+                      .antMatchers(HttpMethod.POST, "/api/auth/changepass").hasAnyAuthority(
+                          Role.ROLE_USER.name,
+                          Role.ROLE_ACCOUNTANT.name,
+                          Role.ROLE_ADMINISTRATOR.name)
+                      .antMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyAuthority(
+                          Role.ROLE_USER.name,
+                          Role.ROLE_ACCOUNTANT.name)
+                      .antMatchers(HttpMethod.POST, "/api/acct/payments").hasAuthority(Role.ROLE_ACCOUNTANT.name)
+                      .antMatchers(HttpMethod.PUT, "/api/acct/payments").hasAuthority(Role.ROLE_ACCOUNTANT.name)
+                      .antMatchers("/api/admin/**").hasAuthority(Role.ROLE_ADMINISTRATOR.name)
+                  }
+                  .sessionManagement { sessions ->
+                      sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session
+                  }
+      
+              return http.build()
+          }
+      
+          @Bean
+          open fun passwordEncoder(): PasswordEncoder {
+              return BCryptPasswordEncoder(13)
+          }
+      }
+    
+    
+    
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/27101#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Thu, 19 Oct 2023 17:12:46 UTC"
 record: -1

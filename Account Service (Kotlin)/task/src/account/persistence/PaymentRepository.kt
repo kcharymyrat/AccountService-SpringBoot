@@ -8,5 +8,5 @@ import java.time.YearMonth
 @Repository
 interface PaymentRepository : CrudRepository<Payment, Long> {
     fun findPaymentByEmployeeIgnoreCase(email: String): List<Payment>
-    fun findPaymentByEmployeeIgnoreCaseAndPeriod(email: String, period: YearMonth): Payment?
+    fun findPaymentByEmployeeIgnoreCaseAndPeriod(employee: String, period: YearMonth): Payment?
 }

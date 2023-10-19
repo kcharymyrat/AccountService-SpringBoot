@@ -2,6 +2,7 @@ package account.businesslayer
 
 
 
+import account.persistence.BreachedPasswordRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
@@ -23,8 +24,52 @@ import kotlin.collections.LinkedHashMap
 @Configuration
 open class BeanConfig {
 
+    @Autowired
+    lateinit var userService: AppUserService
+
+    @Autowired
+    lateinit var auditService: AuditService
+
+    @Bean
+    open fun authenticationProvider(): DaoAuthenticationProvider {
+        println("authenticationProvider")
+        val provider = DaoAuthenticationProvider()
+
+        provider.setPasswordEncoder(getEncoder())
+        provider.setUserDetailsService(userService)
+
+        return provider
+    }
+    @Bean
+    open fun getEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
+    }
+
+    @Bean
+    open fun commandLineRunner(breachedPasswordRepository: BreachedPasswordRepository): CommandLineRunner {
+        return CommandLineRunner {
+
+            val breachedPasswords: Set<String> = HashSet(
+                setOf(
+                    "PasswordForJanuary", "PasswordForFebruary", "PasswordForMarch", "PasswordForApril",
+                    "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
+                    "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember"
+                )
+            )
+
+            breachedPasswords.forEach(Consumer { pass: String ->
+                breachedPasswordRepository.save(
+                    BreachedPassword(password = pass)
+                )
+            })
+
+        }
+    }
+
     @Bean
     open fun getAccessDeniedHandler(): AccessDeniedHandler {
+        println("+++++++++++++++++++++++++++++getAccessDeniedHandler++++++++++++++++++++++")
+
         return AccessDeniedHandler { request: HttpServletRequest,
                                      response: HttpServletResponse,
                                      _: AccessDeniedException ->
@@ -38,6 +83,13 @@ open class BeanConfig {
             data["error"] = "Forbidden"
             data["message"] = "Access Denied!"
             data["path"] = request.requestURI
+
+            auditService.logEvent(
+                Action.ACCESS_DENIED,
+                request.remoteUser,
+                request.servletPath,
+                request.servletPath
+            )
 
             response.outputStream
                 .println(ObjectMapper().writeValueAsString(data))

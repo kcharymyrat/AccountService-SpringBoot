@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class RoleOperationDTO (
 
-    @JsonProperty("user")
+    @field:JsonProperty("user")
     var email: String = "",
 
     var role: String = "",

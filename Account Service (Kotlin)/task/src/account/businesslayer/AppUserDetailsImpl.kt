@@ -11,7 +11,7 @@ class AppUserDetailsImpl(private val repository: AppUserRepository) : UserDetail
 
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(email: String): UserDetails {
-        val user = repository.findAppUserByEmail(email.lowercase())
+        val user = repository.findUserByEmailIgnoreCase(email.lowercase())
             ?: throw UsernameNotFoundException("User not found: $email")
 
         return AppUserAdapter(user)
