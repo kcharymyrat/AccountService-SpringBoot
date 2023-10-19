@@ -1904,6 +1904,13 @@ files:
           CHECK_PASSWORD("Password length must be 12 chars minimum!")
       }
     learner_created: true
+  - name: src/resources/keystore/service.p12
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/27102#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Thu, 19 Oct 2023 17:45:24 UTC"
 record: -1
